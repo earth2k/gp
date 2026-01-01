@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For You 💙</title>
+<style>
+*{box-sizing:border-box;font-family:system-ui,"Segoe UI",sans-serif}
+body{
+  margin:0;min-height:100vh;
+  background:linear-gradient(135deg,#eef4ff,#dbe8ff,#e3dcff);
+  display:flex;align-items:center;justify-content:center;
+}
+.page{display:none;flex-direction:column;align-items:center;justify-content:center}
+.page.show{display:flex}
+
+/* หน้าเปิด */
+.open h1{font-size:36px;color:#4f5b82;margin-bottom:20px}
+.open button{
+  padding:14px 34px;border:none;border-radius:40px;
+  font-size:18px;cursor:pointer;color:#fff;
+  background:linear-gradient(135deg,#9fc4ff,#b19cff);
+  box-shadow:0 10px 25px rgba(120,140,255,.45);
+}
+
+/* หัวใจ */
+.heart-wrap{width:220px;height:200px;cursor:pointer}
+svg{width:100%;height:100%}
+#fill{
+  transform-origin:bottom;
+  transform:scaleY(0);
+  transition:transform .15s linear;
+}
+.tip{margin-top:18px;color:#5a6a8f}
+
+/* ใส่รหัส */
+.pass h2{color:#4f5b82;margin-bottom:14px}
+.dots{display:flex;gap:10px;margin-bottom:18px}
+.dot{
+  width:14px;height:14px;border-radius:50%;
+  border:2px solid #7c8cc4;
+}
+.dot.active{background:#7c8cc4}
+.keypad{
+  display:grid;grid-template-columns:repeat(3,70px);
+  gap:14px;
+}
+.keypad button{
+  height:60px;border-radius:50%;
+  border:none;font-size:20px;cursor:pointer;
+  background:#f1f6ff;
+  box-shadow:0 6px 14px rgba(120,150,255,.35);
+}
+
+/* การ์ด */
+iframe{
+  width:100vw;height:100vh;border:none;
+}
+</style>
+</head>
+<body>
+
+<!-- หน้าเปิด -->
+<div class="page open show" id="pOpen">
+  <h1>เปิดสิ 💙</h1>
+  <button onclick="goHeart()">เปิด</button>
+</div>
+
+<!-- หน้าหัวใจ -->
+<div class="page" id="pHeart">
+  <div class="heart-wrap" onclick="fillHeart()">
+    <svg viewBox="0 0 512 512">
+      <defs>
+        <clipPath id="clipHeart">
+          <path d="M256 464s-176-96-176-256c0-61 51-112 112-112 45 0 84 27 104 66 20-39 59-66 104-66 61 0 112 51 112 112 0 160-176 256-176 256z"/>
+        </clipPath>
+      </defs>
+      <path d="M256 464s-176-96-176-256c0-61 51-112 112-112 45 0 84 27 104 66 20-39 59-66 104-66 61 0 112 51 112 112 0 160-176 256-176 256z"
+        fill="none" stroke="#7c8cc4" stroke-width="14"/>
+      <rect id="fill" x="0" y="0" width="512" height="512" fill="#9fc4ff" clip-path="url(#clipHeart)"/>
+    </svg>
+  </div>
+  <div class="tip">กดให้หัวใจเต็ม 💙</div>
+</div>
+
+<!-- หน้าใส่รหัส -->
+<div class="page pass" id="pPass">
+  <h2>ใส่รหัส</h2>
+  <div class="dots" id="dots"></div>
+  <div class="keypad">
+    <button onclick="press()">1</button><button onclick="press()">2</button><button onclick="press()">3</button>
+    <button onclick="press()">4</button><button onclick="press()">5</button><button onclick="press()">6</button>
+    <button onclick="press()">7</button><button onclick="press()">8</button><button onclick="press()">9</button>
+    <button></button><button onclick="press()">0</button><button></button>
+  </div>
+</div>
+
+<!-- หน้าโหลดการ์ด -->
+<div class="page" id="pCard">
+  <iframe src="card.html"></iframe>
+</div>
+
+<script>
+const pOpen=pOpen=document.getElementById("pOpen");
+const pHeart=document.getElementById("pHeart");
+const pPass=document.getElementById("pPass");
+const pCard=document.getElementById("pCard");
+
+function goHeart(){
+  pOpen.classList.remove("show");
+  pHeart.classList.add("show");
+}
+
+/* หัวใจ */
+let level=0;
+function fillHeart(){
+  level+=0.1;
+  if(level>1) level=1;
+  fill.style.transform=`scaleY(${level})`;
+  if(level>=1){
+    setTimeout(()=>{
+      pHeart.classList.remove("show");
+      pPass.classList.add("show");
+    },400);
+  }
+}
+
+/* รหัส */
+const dots=document.getElementById("dots");
+for(let i=0;i<6;i++){
+  const d=document.createElement("div");
+  d.className="dot";
+  dots.appendChild(d);
+}
+
+let count=0,startTime=null;
+function press(){
+  if(count===0) startTime=Date.now();
+  if(Date.now()-startTime>5000){
+    reset(); return;
+  }
+  dots.children[count].classList.add("active");
+  count++;
+  if(count===6){
+    if(count<=10 && Date.now()-startTime<=5000){
+      setTimeout(()=>{
+        pPass.classList.remove("show");
+        pCard.classList.add("show");
+      },300);
+    }else reset();
+  }
+}
+function reset(){
+  count=0;startTime=null;
+  [...dots.children].forEach(d=>d.classList.remove("active"));
+}
+</script>
+</body>
+</html>
